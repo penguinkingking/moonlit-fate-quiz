@@ -33,6 +33,11 @@ jobs:
           mv ayato.jpg azusa.jpg carla.jpg kanato.jpg kino.jpg kou.jpg laito.jpg reiji.jpg ruki.jpg shin.jpg shu.jpg subaru.jpg yuma.jpg public/art/characters/
           mv hero.png public/art/hero.png
           mv favicon.svg public/favicon.svg
+          cat > components/ui/button.tsx <<'EOF'
+          import * as React from 'react';
+          export const Button = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(({ className = '', ...props }, ref) => <button ref={ref} className={className} {...props} />);
+          Button.displayName = 'Button';
+          EOF
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
