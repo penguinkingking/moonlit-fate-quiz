@@ -1,0 +1,87 @@
+/* Group-specific portrait atmosphere. The artwork remains untouched; these layers only replace the flat white card backdrop. */
+.portrait {
+  isolation: isolate;
+}
+
+.portrait::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.portrait-art {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-repeat: no-repeat;
+  background-position: center bottom;
+  background-size: cover;
+}
+
+/* DIABOLIK LOVERS — burgundy velvet, rose glow, and sharp gothic seams. */
+.portrait-world-0 {
+  background:
+    radial-gradient(ellipse at 52% 34%, #f3dfe1 0 30%, transparent 62%),
+    radial-gradient(circle at 76% 16%, rgb(143 61 74 / 34%) 0 9%, transparent 35%),
+    linear-gradient(145deg, #d3a6ae, #87455a 62%, #351929);
+  border-color: rgb(165 80 94 / 27%);
+}
+
+.portrait-world-0::before {
+  background:
+    radial-gradient(circle at 18% 78%, rgb(123 49 64 / 20%), transparent 34%),
+    repeating-linear-gradient(112deg, transparent 0 24px, rgb(193 124 113 / 19%) 25px, transparent 27px 40px);
+  opacity: .55;
+}
+
+/* Mukami family - ink violet, muted blue, and a restrained manor atmosphere. */
+.portrait-world-1 {
+  background:
+    radial-gradient(circle at 18% 14%, rgb(116 103 158 / 32%) 0 9%, transparent 36%),
+    linear-gradient(145deg, #d8d6e2, #8e879f 55%, #403849);
+  border-color: rgb(151 137 181 / 44%);
+}
+
+.portrait-world-1::before {
+  background:
+    radial-gradient(ellipse at 80% 82%, rgb(198 188 217 / 13%), transparent 40%),
+    repeating-linear-gradient(0deg, rgb(205 197 218 / 7%) 0 1px, transparent 1px 5px),
+    repeating-linear-gradient(90deg, rgb(205 197 218 / 5%) 0 1px, transparent 1px 6px);
+  opacity: .78;
+}
+
+/* Tsukinami family - cold silver, old blood red, and sparse moonlight. */
+.portrait-world-2 {
+  background:
+    radial-gradient(circle at 76% 18%, rgb(224 205 211 / 28%) 0 8%, transparent 34%),
+    linear-gradient(145deg, #e9e4e7, #b5a4ad 55%, #60424d);
+  border-color: rgb(177 143 156 / 44%);
+}
+
+.portrait-world-2::before {
+  background:
+    radial-gradient(circle at 20% 28%, #d8c7ff 0 1px, transparent 2px),
+    radial-gradient(circle at 75% 68%, #f5deff 0 1px, transparent 2px),
+    radial-gradient(circle at 54% 12%, #d8c7ff 0 1px, transparent 2px),
+    linear-gradient(112deg, transparent 0 45%, rgb(185 181 224 / 8%) 46%, transparent 53%);
+  opacity: .62;
+}
+
+/* Kino is independent from the three families. */
+.portrait-world-3 {
+  background: linear-gradient(145deg, #d6c9a0, #8c7445 56%, #2c2318);
+  border-color: rgb(203 174 104 / 45%);
+}
+
+.portrait-world-3::before {
+  background: radial-gradient(circle at 72% 20%, rgb(244 218 151 / 24%), transparent 35%);
+}
+
+.catalog-card > .portrait,
+.character-detail > .portrait,
+.runner-card > .portrait,
+.result-portrait > .portrait {
+  background-clip: padding-box;
+}
