@@ -29,7 +29,7 @@ for (const [name, data] of Object.entries(art)) {
 const js = (await readFile(resolve(built, jsName), 'utf8')).replace(/<\/script/gi, '<\\/script');
 const favicon = `data:image/svg+xml;base64,${(await readFile(resolve(root, 'public/favicon.svg'))).toString('base64')}`;
 const page = `<!doctype html>
-<html lang="zh-CN" class="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="月下心笺：离线中日对照乙女角色娱乐测试。"><title>月下心笺 · 中日对照离线版</title><link rel="icon" href="${favicon}"><style>${css}</style></head><body><div id="root"></div><noscript>请在浏览器中启用 JavaScript 以运行测试。テストを始めるには JavaScript を有効にしてください。</noscript><script>window.__MOONLIT_ART__=${JSON.stringify(art)};</script><script>${js}</script></body></html>`;
+<html lang="zh-CN" class="dark"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="月下心笺：乙女角色娱乐测试。"><title>月下心笺 · 寻找你的命定角色</title><link rel="icon" href="${favicon}"><style>${css}</style></head><body><div id="root"></div><noscript>请在浏览器中启用 JavaScript 以运行测试。テストを始めるには JavaScript を有効にしてください。</noscript><script>window.__MOONLIT_ART__=${JSON.stringify(art)};</script><script>${js}</script></body></html>`;
 const output = resolve(process.argv[2] || resolve(built, 'index.html'));
 await mkdir(dirname(output), { recursive: true });
 await writeFile(output, page, 'utf8');

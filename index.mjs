@@ -15,9 +15,16 @@ const adminKey = process.env.MOONLIT_ADMIN_KEY || "";
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const normalizeCode = (value) => String(value || "").trim().toUpperCase().replace(/\s+/g, "");
 let state;
+function normalizeState(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return { licenses: {} };
+  const licenses = value.licenses;
+  return licenses && typeof licenses === "object" && !Array.isArray(licenses)
+    ? { ...value, licenses }
+    : { ...value, licenses: {} };
+}
 async function load() {
   await mkdir(dataRoot, { recursive: true });
-  try { state = JSON.parse(await readFile(dbPath, "utf8")); }
+  try { state = normalizeState(JSON.parse(await readFile(dbPath, "utf8"))); }
   catch { state = { licenses: {} }; }
   for (const code of String(process.env.MOONLIT_CODES || "").split(",").map(normalizeCode).filter(Boolean)) {
     const codeHash = hash(code);
@@ -46,7 +53,7 @@ async function api(req, res) {
   if (req.method === "POST" && req.url === "/api/admin/licenses") {
     if (!adminKey || req.headers.authorization !== `Bearer ${adminKey}`) return send(res, 401, { error: "未授权" });
     const input = await body(req).catch(() => ({})); const count = Math.min(1000, Math.max(1, Number(input.count || 1))); const codes = [];
-    for (let i = 0; i < count; i++) { const raw = randomBytes(9).toString("base64url").toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 16); const code = `DL13-${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`; state.licenses[hash(code)] = { createdAt: new Date().toISOString(), batch: input.batch || "default" }; codes.push(code); }
+    for (let i = 0; i < count; i++) { const raw = randomBytes(9).toString("hex").toUpperCase().slice(0, 12); const code = `DL13-${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`; state.licenses[hash(code)] = { createdAt: new Date().toISOString(), batch: input.batch || "default" }; codes.push(code); }
     await save(); return send(res, 201, { codes });
   }
   return false;
