@@ -12,7 +12,8 @@
     "lint": "oxlint",
     "format": "oxfmt",
     "build:offline": "vite build --config vite.offline.config.ts && node offline/package.mjs",
-    "start:license": "npm run build:offline && node server/index.mjs"
+    "build:online": "vite build --config vite.online.config.ts && node package-online.mjs",
+    "start:license": "npm run build:online && node server/index.mjs"
   },
   "dependencies": {
     "react": "19.2.6",
