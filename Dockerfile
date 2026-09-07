@@ -12,6 +12,7 @@ WORKDIR /app
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/server ./server
+COPY --from=build /app/licenses.seed.json ./server/licenses.seed.json
 COPY --from=build /app/offline-build ./offline-build
 ENV PORT=8787
 EXPOSE 8787

@@ -28,6 +28,8 @@ node scripts/generate-codes.mjs 100 ./exports/codes.txt
 
 生产环境建议调用管理员接口批量写入服务端：`POST /api/admin/licenses`，请求头为 `Authorization: Bearer <MOONLIT_ADMIN_KEY>`，请求体为 `{ "count": 100, "batch": "平台A" }`。
 
+需要随镜像导入既有清单时，使用 `build-license-seed.mjs` 将恰好 1000 个唯一兑换码转换成 `licenses.seed.json`。镜像只携带 SHA-256 哈希，服务启动时会把缺少的记录合并到持久化授权库；不要把明文兑换码提交到仓库。
+
 ## Sealos 部署
 
 使用仓库中的 `Dockerfile` 构建并运行，容器端口填写 `8787`。健康检查使用 `GET /api/license/status`。为 `/app/data` 挂载持久化卷，并设置：

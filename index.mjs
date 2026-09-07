@@ -9,23 +9,42 @@ const root = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const publicRoot = resolve(root, "offline-build");
 const dataRoot = resolve(process.env.MOONLIT_DATA_DIR || join(root, "data"));
 const dbPath = join(dataRoot, "licenses.json");
+const seedPath = join(root, "server", "licenses.seed.json");
 const port = Number(process.env.PORT || 8787);
 const adminKey = process.env.MOONLIT_ADMIN_KEY || "";
+const codeAlphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
 const hash = (value) => createHash("sha256").update(value).digest("hex");
 const normalizeCode = (value) => String(value || "").trim().toUpperCase().replace(/\s+/g, "");
+function makeCode() {
+  const raw = [...randomBytes(12)].map((byte) => codeAlphabet[byte & 31]).join("");
+  return `DL13-${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`;
+}
 let state;
 function normalizeState(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return { licenses: {} };
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("授权数据库结构无效");
   const licenses = value.licenses;
-  return licenses && typeof licenses === "object" && !Array.isArray(licenses)
-    ? { ...value, licenses }
-    : { ...value, licenses: {} };
+  if (!licenses || typeof licenses !== "object" || Array.isArray(licenses)) throw new Error("授权数据库缺少 licenses 对象");
+  return { ...value, licenses };
 }
 async function load() {
   await mkdir(dataRoot, { recursive: true });
   try { state = normalizeState(JSON.parse(await readFile(dbPath, "utf8"))); }
-  catch { state = { licenses: {} }; }
+  catch (error) {
+    if (error?.code === "ENOENT") state = { licenses: {} };
+    else throw error;
+  }
+  try {
+    const seed = JSON.parse(await readFile(seedPath, "utf8"));
+    const hashes = [...new Set(seed.hashes || [])];
+    if (!hashes.length || hashes.some((value) => !/^[a-f0-9]{64}$/.test(value))) throw new Error("兑换码种子文件无效");
+    for (const codeHash of hashes) {
+      if (!state.licenses[codeHash]) state.licenses[codeHash] = { createdAt: seed.createdAt, batch: seed.batch };
+    }
+    console.log(`Loaded ${hashes.length} seeded licenses`);
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error;
+  }
   for (const code of String(process.env.MOONLIT_CODES || "").split(",").map(normalizeCode).filter(Boolean)) {
     const codeHash = hash(code);
     if (!state.licenses[codeHash]) state.licenses[codeHash] = { createdAt: new Date().toISOString(), batch: "env" };
@@ -53,7 +72,7 @@ async function api(req, res) {
   if (req.method === "POST" && req.url === "/api/admin/licenses") {
     if (!adminKey || req.headers.authorization !== `Bearer ${adminKey}`) return send(res, 401, { error: "未授权" });
     const input = await body(req).catch(() => ({})); const count = Math.min(1000, Math.max(1, Number(input.count || 1))); const codes = [];
-    for (let i = 0; i < count; i++) { const raw = randomBytes(9).toString("hex").toUpperCase().slice(0, 12); const code = `DL13-${raw.slice(0,4)}-${raw.slice(4,8)}-${raw.slice(8,12)}`; state.licenses[hash(code)] = { createdAt: new Date().toISOString(), batch: input.batch || "default" }; codes.push(code); }
+    while (codes.length < count) { const code = makeCode(); const codeHash = hash(code); if (state.licenses[codeHash]) continue; state.licenses[codeHash] = { createdAt: new Date().toISOString(), batch: input.batch || "default" }; codes.push(code); }
     await save(); return send(res, 201, { codes });
   }
   return false;
