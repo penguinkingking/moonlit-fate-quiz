@@ -23,6 +23,11 @@ const dimensions = {
   drive: ["续航力", "越高越能把烂摊子拖到终点", "#44ba69"]
 };
 
+function optionFor(question, optionIndex) {
+  if (optionIndex < question.options.length) return question.options[optionIndex];
+  return question.secret || null;
+}
+
 function calculateMetrics() {
   const totals = Object.fromEntries(dimensionKeys.map((key) => [key, 0]));
   const maximums = Object.fromEntries(dimensionKeys.map((key) => [key, 0]));

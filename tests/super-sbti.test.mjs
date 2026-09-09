@@ -17,10 +17,6 @@ async function loadQuizModel() {
   vm.runInContext(`${questionsSource}\n${profilesSource}\n${extensionsSource}\n${scoringSource}\n
     const dimensionKeys = Object.keys(dimensions);
     let state = { answers: {}, answerTimes: {}, backtracks: 0, idleHints: 0, dangerPresses: 0, rootUnlocked: false };
-    function optionFor(question, optionIndex) {
-      if (optionIndex < question.options.length) return question.options[optionIndex];
-      return question.secret || null;
-    }
     globalThis.quiz = {
       questions,
       profiles,
