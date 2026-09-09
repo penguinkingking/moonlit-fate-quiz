@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "tests": [
+    "apps/tests/moonlit-fate/test.manifest.json",
+    "apps/tests/inner-voices/test.manifest.json"
+  ]
+}

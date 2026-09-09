@@ -36,7 +36,7 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { artUrl } from "@/lib/art";
-import { isLocallyAuthorized, redeemLicense } from "@/lib/license";
+import { redeemLicense, verifyLicense } from "@/lib/license";
 import {
   characters,
   chapters,
@@ -211,6 +211,7 @@ export default function Home() {
   const [detail, setDetail] = useState<Character | null>(null);
   const [about, setAbout] = useState(false);
   const [licensed, setLicensed] = useState(false);
+  const [licenseChecked, setLicenseChecked] = useState(false);
   const [licenseCode, setLicenseCode] = useState("");
   const [licenseError, setLicenseError] = useState("");
   const [redeeming, setRedeeming] = useState(false);
@@ -252,7 +253,14 @@ export default function Home() {
     );
     return () => window.clearTimeout(t);
   }, [stage, lightMotion, changeStage]);
-  useEffect(() => { setLicensed(isLocallyAuthorized()); }, []);
+  useEffect(() => {
+    let active = true;
+    void verifyLicense()
+      .then((authorized) => { if (active) setLicensed(authorized); })
+      .catch(() => { if (active) setLicensed(false); })
+      .finally(() => { if (active) setLicenseChecked(true); });
+    return () => { active = false; };
+  }, []);
   useEffect(() => {
     type Tool = {
       name: string;
@@ -419,7 +427,7 @@ export default function Home() {
     catch (error) { setLicenseError(error instanceof Error ? error.message : "兑换失败，请检查兑换码"); }
     finally { setRedeeming(false); }
   };
-  if (!licensed) return <div className={`app ${lightMotion ? "motion-lite" : ""}`}><header className="site-header"><button className="brand" onClick={() => window.location.reload()} aria-label="月下心笺"><span className="brand-symbol">✧</span><span>月下心笺<small>MOONLIT FATE</small></span></button></header><main><section className="license-gate"><KeyRound size={30}/><p className="eyebrow">MOONLIT FATE · ACCESS</p><h1>输入兑换码，开启心动测试</h1><p>兑换码仅需使用一次，成功后当前浏览器可反复测试。</p><div className="license-form"><input value={licenseCode} onChange={e => setLicenseCode(e.target.value)} onKeyDown={e => { if (e.key === "Enter") void unlock(); }} placeholder="请输入兑换码" aria-label="兑换码" autoComplete="off"/><button className="primary-button" onClick={() => void unlock()} disabled={redeeming || !licenseCode.trim()}>{redeeming ? "验证中…" : "立即解锁"}<KeyRound size={17}/></button></div>{licenseError && <p className="license-error" role="alert">{licenseError}</p>}<small>兑换码由购买平台提供 · 本页不参与支付</small></section></main><footer className="site-footer"><span>✧ 月下心笺</span><p>同人娱乐测试 · 不属于心理测评或关系建议</p></footer></div>;
+  if (!licensed) return <div className={`app ${lightMotion ? "motion-lite" : ""}`}><header className="site-header"><button className="brand" onClick={() => window.location.reload()} aria-label="月下心笺"><span className="brand-symbol">✧</span><span>月下心笺<small>MOONLIT FATE</small></span></button></header><main><section className="license-gate"><KeyRound size={30}/><p className="eyebrow">MOONLIT FATE · ACCESS</p><h1>{licenseChecked ? "输入兑换码，开启心动测试" : "正在确认访问授权"}</h1><p>{licenseChecked ? "兑换码仅需使用一次，成功后当前浏览器可反复测试。" : "请稍候…"}</p>{licenseChecked && <><div className="license-form"><input value={licenseCode} onChange={e => setLicenseCode(e.target.value)} onKeyDown={e => { if (e.key === "Enter") void unlock(); }} placeholder="请输入兑换码" aria-label="兑换码" autoComplete="off"/><button className="primary-button" onClick={() => void unlock()} disabled={redeeming || !licenseCode.trim()}>{redeeming ? "验证中…" : "立即解锁"}<KeyRound size={17}/></button></div>{licenseError && <p className="license-error" role="alert">{licenseError}</p>}<small>兑换码由购买平台提供 · 本页不参与支付</small></>}</section></main><footer className="site-footer"><span>✧ 月下心笺</span><p>同人娱乐测试 · 不属于心理测评或关系建议</p></footer></div>;
   return (
     <div className={`app ${lightMotion ? "motion-lite" : ""}`}>
       <header className="site-header">

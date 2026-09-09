@@ -38,4 +38,5 @@ next-env.d.ts
 /work/
 /offline-build/
 /web-build/
-/data/*.json
+/data/
+tsconfig.tsbuildinfo

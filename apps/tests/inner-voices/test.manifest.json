@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "slug": "inner-voices",
+  "name": "内在三声部",
+  "description": "48 题人格结构风格自我探索",
+  "version": "1.0.0",
+  "mode": "custom-static",
+  "entry": "index.html",
+  "legacyRoot": false,
+  "licenseRequired": true,
+  "codePrefix": "IV48",
+  "resultStorageKey": "innerVoices:lastResult:v2"
+}

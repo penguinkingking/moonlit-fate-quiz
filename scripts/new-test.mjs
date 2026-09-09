@@ -1,0 +1,60 @@
+import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+
+const args = Object.fromEntries(process.argv.slice(2).reduce((pairs, value, index, values) => {
+  if (value.startsWith("--")) pairs.push([value.slice(2), values[index + 1]]);
+  return pairs;
+}, []));
+const slug = String(args.slug || "").trim();
+const name = String(args.name || "").trim();
+const mode = String(args.mode || "standard").trim();
+if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) throw new Error("--slug 必须是小写英文、数字和连字符");
+if (!name) throw new Error("必须提供 --name");
+if (!new Set(["standard", "custom-static"]).has(mode)) throw new Error("--mode 目前支持 standard 或 custom-static");
+
+const root = process.cwd();
+const directory = resolve(root, "apps", "tests", slug);
+const manifest = {
+  schemaVersion: 1,
+  slug,
+  name,
+  description: `${name}测试`,
+  version: "0.1.0",
+  mode,
+  entry: "index.html",
+  legacyRoot: false,
+  licenseRequired: true,
+  codePrefix: slug.replace(/[^a-z0-9]/g, "").slice(0, 6).toUpperCase(),
+  resultStorageKey: `test-platform:${slug}:last-result`,
+};
+await mkdir(directory, { recursive: false });
+await writeFile(resolve(directory, "test.manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+
+if (mode === "standard") {
+  const config = {
+    name,
+    title: name,
+    kicker: "A PERSONAL EXPLORATION",
+    description: "请根据第一直觉作答，完成后查看属于你的结果。",
+    questions: [
+      { text: "面对一个全新的机会，你通常会？", options: [
+        { text: "先行动，在过程中调整", scores: { explorer: 2 } },
+        { text: "先观察，确认方向再开始", scores: { planner: 2 } },
+      ] },
+    ],
+    results: {
+      explorer: { title: "主动探索者", description: "你更愿意通过行动理解世界。" },
+      planner: { title: "沉稳规划者", description: "你善于先建立方向，再稳步前进。" },
+    },
+  };
+  await writeFile(resolve(directory, "test.config.json"), `${JSON.stringify(config, null, 2)}\n`, "utf8");
+  await writeFile(resolve(directory, "index.html"), `<!doctype html>\n<html lang="zh-CN" data-test-slug="${slug}">\n<head>\n  <meta charset="utf-8">\n  <meta name="viewport" content="width=device-width,initial-scale=1">\n  <title>${name}</title>\n  <link rel="stylesheet" href="/shared/license-gate.css">\n  <link rel="stylesheet" href="/shared/standard-runtime.css">\n</head>\n<body>\n  <div id="test-root"></div>\n  <script src="/shared/license-gate.js"></script>\n  <script src="/shared/standard-runtime.js"></script>\n</body>\n</html>\n`, "utf8");
+} else {
+  await writeFile(resolve(directory, "index.html"), `<!doctype html>\n<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${name}</title><link rel="stylesheet" href="/shared/license-gate.css"></head><body><main><h1>${name}</h1></main><script src="/shared/license-gate.js"></script><script>TestPlatformLicense.start({ testSlug: ${JSON.stringify(slug)}, testName: ${JSON.stringify(name)} });</script></body></html>\n`, "utf8");
+}
+
+const registryPath = resolve(root, "tests-registry.json");
+const registry = JSON.parse(await readFile(registryPath, "utf8"));
+registry.tests.push(`apps/tests/${slug}/test.manifest.json`);
+await writeFile(registryPath, `${JSON.stringify(registry, null, 2)}\n`, "utf8");
+console.log(`Created ${name}: ${directory}`);

@@ -3,7 +3,7 @@ node_modules
 dist
 offline-build
 web-build
-data/*.json
+data
 *.zip
 *.log
 tsconfig.tsbuildinfo

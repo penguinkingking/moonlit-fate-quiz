@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>测试产品管理后台</title>
+  <link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+  <main id="loginView" class="login-shell">
+    <section class="login-panel" aria-labelledby="loginTitle">
+      <div class="brand-mark" aria-hidden="true">YB</div>
+      <p class="eyebrow">TEST PLATFORM</p>
+      <h1 id="loginTitle">测试产品管理后台</h1>
+      <p class="login-copy">登录后管理测试项目、兑换码和订单发码。</p>
+      <form id="loginForm" class="stack-form">
+        <label>用户名<input id="username" name="username" autocomplete="username" required></label>
+        <label>密码<input id="password" name="password" type="password" autocomplete="current-password" required></label>
+        <button class="button primary" type="submit">登录</button>
+        <p id="loginError" class="form-error" role="alert" hidden></p>
+      </form>
+    </section>
+  </main>
+
+  <div id="appView" class="app-shell" hidden>
+    <aside class="sidebar">
+      <div class="brand-lockup"><span class="brand-mark" aria-hidden="true">YB</span><div><strong>圆宝测试平台</strong><small>CONTROL DESK</small></div></div>
+      <nav aria-label="后台导航">
+        <button class="nav-item active" data-view="overview"><span aria-hidden="true">▦</span>总览</button>
+        <button class="nav-item" data-view="allocate"><span aria-hidden="true">⌁</span>订单发码</button>
+        <button class="nav-item" data-view="licenses"><span aria-hidden="true">#</span>兑换码</button>
+        <button class="nav-item" data-view="batches"><span aria-hidden="true">≡</span>批次与导入</button>
+        <button class="nav-item" data-view="system"><span aria-hidden="true">⚙</span>系统</button>
+      </nav>
+      <div class="sidebar-foot"><span id="signedInUser"></span><button id="logoutButton" class="icon-button" type="button" title="退出登录" aria-label="退出登录">↪</button></div>
+    </aside>
+
+    <div class="workspace">
+      <header class="topbar"><button id="menuButton" class="icon-button menu-button" type="button" aria-label="打开导航">☰</button><div><p id="pageKicker" class="eyebrow">PLATFORM OVERVIEW</p><h1 id="pageTitle">运营总览</h1></div><button id="refreshButton" class="button secondary" type="button"><span aria-hidden="true">↻</span>刷新</button></header>
+
+      <main class="content">
+        <section class="view active" data-view-panel="overview">
+          <div id="metrics" class="metrics" aria-live="polite"></div>
+          <section class="panel"><div class="section-head"><div><p class="eyebrow">TESTS</p><h2>测试项目</h2></div></div><div class="table-wrap"><table><thead><tr><th>测试</th><th>入口</th><th>版本</th><th>可发放</th><th>待补全旧码</th><th>已分配</th><th>已兑换</th></tr></thead><tbody id="testsBody"></tbody></table></div></section>
+          <section class="panel"><div class="section-head"><div><p class="eyebrow">RECENT ACTIVITY</p><h2>最近操作</h2></div></div><div id="recentAudit" class="activity-list"></div></section>
+        </section>
+
+        <section class="view" data-view-panel="allocate">
+          <section class="panel split-panel">
+            <div><p class="eyebrow">FULFILLMENT</p><h2>为订单分配兑换码</h2><p class="muted">同一测试和订单号重复提交时返回原来的兑换码，不会重复消耗库存。</p></div>
+            <form id="allocateForm" class="stack-form compact-form">
+              <label>测试项目<select id="allocateTest" name="testSlug" required></select></label>
+              <label>订单号或买家标识<input id="orderRef" name="orderRef" maxlength="100" placeholder="粘贴订单号" required></label>
+              <button class="button primary" type="submit">分配下一个兑换码</button>
+            </form>
+          </section>
+          <section id="allocationResult" class="panel result-panel" hidden>
+            <div class="section-head"><div><p class="eyebrow">READY TO SEND</p><h2>发码内容已生成</h2></div><span id="allocationRepeat" class="status-badge" hidden>此前已分配</span></div>
+            <label class="code-field">兑换码<div><strong id="allocatedCode"></strong><button id="copyCode" class="icon-button" type="button" title="复制兑换码" aria-label="复制兑换码">▣</button></div></label>
+            <label>买家回复<textarea id="buyerReply" rows="8" readonly></textarea></label>
+            <button id="copyReply" class="button primary" type="button">复制完整回复</button>
+          </section>
+        </section>
+
+        <section class="view" data-view-panel="licenses">
+          <section class="panel"><div class="section-head"><div><p class="eyebrow">LICENSE INVENTORY</p><h2>兑换码查询</h2></div></div>
+            <form id="licenseSearchForm" class="filter-form"><select id="searchTest"><option value="">全部测试</option></select><select id="searchStatus"><option value="">全部状态</option><option value="available">未发放</option><option value="allocated">已分配</option><option value="redeemed">已兑换</option><option value="disabled">已停用</option></select><input id="searchQuery" placeholder="兑换码或订单号"><button class="button secondary" type="submit">查询</button></form>
+            <div class="table-wrap"><table><thead><tr><th>ID</th><th>测试</th><th>兑换码</th><th>状态</th><th>订单</th><th>时间</th><th>操作</th></tr></thead><tbody id="licensesBody"></tbody></table></div>
+          </section>
+        </section>
+
+        <section class="view" data-view-panel="batches">
+          <div class="two-columns">
+            <section class="panel"><p class="eyebrow">GENERATE</p><h2>生成兑换码</h2><form id="generateForm" class="stack-form compact-form"><label>测试项目<select id="generateTest" required></select></label><label>批次名称<input id="batchName" maxlength="80" placeholder="例如：小红书-2026-09"></label><label>数量<input id="generateCount" type="number" min="1" max="5000" value="100"></label><button class="button primary" type="submit">生成并保存</button></form><div id="generateResult" class="inline-result" hidden></div></section>
+            <section class="panel"><p class="eyebrow">IMPORT</p><h2>导入兑换码</h2><form id="importForm" class="stack-form compact-form"><label>测试项目<select id="importTest" required></select></label><label>批次名称<input id="importBatchName" maxlength="80" placeholder="例如：旧码迁移"></label><label>兑换码文件<input id="importFile" type="file" accept=".txt,text/plain" required></label><button class="button primary" type="submit">备份并导入</button></form><div id="importResult" class="inline-result" hidden></div></section>
+          </div>
+          <section class="panel"><div class="section-head"><div><p class="eyebrow">BATCHES</p><h2>兑换码批次</h2></div></div><div class="table-wrap"><table><thead><tr><th>批次</th><th>测试</th><th>数量</th><th>可发放</th><th>已分配</th><th>已兑换</th><th>创建时间</th><th>导出</th></tr></thead><tbody id="batchesBody"></tbody></table></div></section>
+        </section>
+
+        <section class="view" data-view-panel="system">
+          <div class="two-columns">
+            <section class="panel"><div class="section-head"><div><p class="eyebrow">BACKUPS</p><h2>数据备份</h2></div><button id="backupButton" class="button secondary" type="button">立即备份</button></div><p class="muted">系统每天自动生成一致性备份，并按保留策略清理旧文件。</p><div id="backupList" class="plain-list"></div></section>
+            <section class="panel"><p class="eyebrow">SERVICE</p><h2>运行状态</h2><dl id="systemStatus" class="status-list"></dl></section>
+          </div>
+          <section class="panel"><div class="section-head"><div><p class="eyebrow">AUDIT LOG</p><h2>操作记录</h2></div></div><div class="table-wrap"><table><thead><tr><th>时间</th><th>账号</th><th>操作</th><th>对象</th><th>详情</th></tr></thead><tbody id="auditBody"></tbody></table></div></section>
+        </section>
+      </main>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

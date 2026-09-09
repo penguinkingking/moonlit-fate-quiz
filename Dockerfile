@@ -1,20 +1,25 @@
-FROM node:22-alpine AS build
+FROM node:22-bookworm-slim AS build
 WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run build:online
+RUN npm run test:validate && npm run build:platform && npm test
 
 RUN npm prune --omit=dev
 
-FROM node:22-alpine
+FROM node:22-bookworm-slim
 WORKDIR /app
 COPY --from=build /app/package*.json ./
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/server ./server
-COPY --from=build /app/licenses.seed.json ./server/licenses.seed.json
+COPY --from=build /app/tests-registry.json ./tests-registry.json
+COPY --from=build /app/apps/tests ./apps/tests
 COPY --from=build /app/web-build ./web-build
 ENV PORT=8787
+ENV DATA_DIR=/app/data
+RUN mkdir -p /app/data && chown -R node:node /app
+USER node
 EXPOSE 8787
-HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||8787)+'/api/license/status').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+VOLUME ["/app/data"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||8787)+'/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
 CMD ["node", "server/index.mjs"]

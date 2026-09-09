@@ -1,0 +1,97 @@
+.platform-license-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(248, 247, 244, 0.97);
+  color: #201e1b;
+  font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+
+.platform-license-panel {
+  width: min(100%, 440px);
+  padding: 38px 34px;
+  border: 1px solid #d9d5ce;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 20px 70px rgba(33, 28, 22, 0.12);
+  text-align: center;
+}
+
+.platform-license-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 22px;
+  place-items: center;
+  border: 1px solid #2d2923;
+  border-radius: 50%;
+  font: 600 11px/1 monospace;
+  letter-spacing: 0;
+}
+
+.platform-license-kicker {
+  margin: 0 0 9px;
+  color: #776f64;
+  font-size: 12px;
+}
+
+.platform-license-panel h1 {
+  margin: 0;
+  font-size: 26px;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.platform-license-copy {
+  margin: 13px 0 24px;
+  color: #6f6961;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.platform-license-form {
+  display: grid;
+  gap: 12px;
+}
+
+.platform-license-form input,
+.platform-license-form button {
+  min-height: 48px;
+  border-radius: 4px;
+  font: inherit;
+}
+
+.platform-license-form input {
+  min-width: 0;
+  border: 1px solid #c9c4bc;
+  padding: 0 14px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.platform-license-form button {
+  border: 1px solid #201e1b;
+  background: #201e1b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.platform-license-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.platform-license-error {
+  margin: 14px 0 0;
+  color: #a42d2d;
+  font-size: 13px;
+}
+
+@media (max-width: 540px) {
+  .platform-license-gate { padding: 16px; }
+  .platform-license-panel { padding: 32px 20px; }
+  .platform-license-panel h1 { font-size: 23px; }
+}

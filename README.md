@@ -1,44 +1,55 @@
-# 月下心笺
+# 圆宝多测试产品平台
 
-《魔鬼恋人》13 人角色心动测试。前端在浏览器本地计算，兑换码由同源授权服务验证。
+一个 Node.js 服务承载多套相互独立的测试、统一兑换码系统和公网管理后台。目前注册：
 
-## 本地开发
+- `/` 与 `/tests/moonlit-fate/`：月下心笺。
+- `/tests/inner-voices/`：内在三声部 48 题人格测试。
+- `/admin/`：统一管理后台。
+
+详细设计见 [`docs/01-system-design.md`](docs/01-system-design.md)，当前进度见 [`docs/02-implementation-checklist.md`](docs/02-implementation-checklist.md)，生产操作见 [`docs/03-deployment-runbook.md`](docs/03-deployment-runbook.md)。
+
+## 本地启动
+
+先设置环境变量。Secret 不得写入仓库：
 
 ```powershell
+$env:ADMIN_USERNAME='本地管理员账号'
+$env:ADMIN_PASSWORD='本地管理员密码'
+$env:SESSION_SECRET='至少32字符的独立随机值'
+$env:LICENSE_TOKEN_SECRET='至少32字符的另一随机值'
+$env:CODE_ENCRYPTION_KEY='至少32字符的第三个随机值'
+$env:PUBLIC_BASE_URL='http://127.0.0.1:8787'
+$env:DATA_DIR="$PWD/data"
 npm install
-npm run build:offline
-node server/index.mjs
+npm run build:platform
+npm start
 ```
 
-打开 `http://127.0.0.1:8787/`。服务端需要设置 `MOONLIT_ADMIN_KEY` 才能生成兑换码。
+打开 `http://127.0.0.1:8787/admin/`。首次启动会把历史 `licenses.seed.json` 摘要记录幂等迁移到 SQLite；这些旧码在后台显示为“待补全旧码”，上传原始明文清单后才可从后台分配。
 
-## 兑换规则
-
-- 兑换码只能成功兑换一次。
-- 首次兑换绑定当前浏览器生成的设备 ID。
-- 同一浏览器之后可以无限次测试。
-- 换浏览器、无痕窗口或清除网站数据视为新设备。
-- 兑换码不设过期时间，不接入支付。
-
-## 生成兑换码
+## 验证
 
 ```powershell
-node scripts/generate-codes.mjs 100 ./exports/codes.txt
+npm run test:validate
+npx tsc --noEmit --pretty false
+npm run build:platform
+npm test
+npm audit --omit=dev
 ```
 
-生产环境建议调用管理员接口批量写入服务端：`POST /api/admin/licenses`，请求头为 `Authorization: Bearer <MOONLIT_ADMIN_KEY>`，请求体为 `{ "count": 100, "batch": "平台A" }`。
+## 新建测试
 
-需要随镜像导入既有清单时，使用 `build-license-seed.mjs` 将恰好 1000 个唯一兑换码转换成 `licenses.seed.json`。镜像只携带 SHA-256 哈希，服务启动时会把缺少的记录合并到持久化授权库；不要把明文兑换码提交到仓库。
+```powershell
+npm run test:new -- --slug sample-test --name "示例测试" --mode standard
+npm run test:validate
+```
 
-## Sealos 部署
+`standard` 会生成可直接修改的题库、结果和通用页面。特殊玩法使用 `custom-static`，或参照月下心笺建立自定义 React 构建，但仍通过共享授权 API 接入后台。
 
-使用仓库中的 `Dockerfile` 构建并运行，容器端口填写 `8787`。健康检查使用 `GET /api/license/status`。为 `/app/data` 挂载持久化卷，并设置：
+## 数据规则
 
-- `PORT=8787`
-- `MOONLIT_ADMIN_KEY=随机长字符串`
-- `MOONLIT_TOKEN_SECRET=随机长字符串`
-
-不要把管理密钥写入代码或提交到 Git。部署后先调用管理员接口生成少量测试码，再用浏览器验证兑换、重复测试和跨设备拒绝。
-
-Sealos 上建议保持至少 1 个实例、关闭自动缩容到 0，并让探针使用容器端口 `8787`。公网地址在首次创建、重新部署或实例重启期间短暂显示“准备中”属于入口等待后端就绪；探针变为正常后地址会恢复可访问。若该状态持续不恢复，应先查看实例日志和容器重启次数，再检查 `/app/data` 卷权限与挂载情况。
-
+- 生产数据位于 `DATA_DIR/platform.sqlite`。
+- 备份位于 `DATA_DIR/backups/`，每天自动执行并默认保留 14 天。
+- 兑换码按测试隔离；一码首次兑换后绑定当前浏览器设备 ID。
+- 后台发码以“测试 + 订单号”为幂等键，重复提交同一订单不会消耗第二个码。
+- 生产必须使用 Sealos Secret 设置密码与三个独立密钥。

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="48题弗洛伊德人格结构风格自我探索：理解本我、自我与超我的内在比例。" />
+  <title>内在三声部 · 弗洛伊德人格风格测试</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="responsive-fixes.css" />
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="返回首页"><span class="brand-mark">Ψ</span><span>内在三声部</span></a>
+    <div class="top-actions">
+      <span class="top-meta"><span class="top-rule"></span><span>FREUDIAN SELF EXPLORATION · 48</span></span>
+      <button id="lastResultBtn" class="last-result-btn" type="button" disabled>查看上一次测试结果</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section id="intro" class="hero section-shell">
+      <div class="hero-copy">
+        <p class="eyebrow">一场向内的谈话</p>
+        <h1>听见你心里的<br><em>三种声音</em></h1>
+        <p class="hero-lede">本我追逐渴望，自我寻找平衡，超我守护理想。用 48 个日常场景，慢慢辨认此刻的你如何与世界相处。</p>
+        <div class="hero-actions"><button id="startBtn" class="btn btn-dark">开始探索 <span>→</span></button><span class="quiet-note">约 8 分钟 · 无需登录</span></div>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div>
+        <div class="sigil">id<br><span>ego</span><br>superego</div>
+        <div class="art-caption">THE STRUCTURE<br>OF THE PSYCHE</div>
+      </div>
+    </section>
+
+    <section class="principles section-shell" aria-label="测试说明">
+      <div class="principle"><span class="num">01</span><h3>没有好坏</h3><p>三种力量都是你的一部分，结果只是一面温柔的镜子。</p></div>
+      <div class="principle"><span class="num">02</span><h3>凭第一直觉</h3><p>没有正确答案，选择最接近你平时状态的选项。</p></div>
+      <div class="principle"><span class="num">03</span><h3>只为自我理解</h3><p>本测评为心理学理论风格化创作，不替代专业诊断。</p></div>
+    </section>
+
+    <section id="quiz" class="quiz-wrap section-shell hidden">
+      <div class="quiz-head"><div><p class="eyebrow">INNER DIALOGUE / <span id="qIndexLabel">01</span></p><h2 id="sectionTitle">你的第一反应</h2></div><div class="progress-meta"><span id="progressText">1 / 48</span><div class="progress"><i id="progressBar"></i></div></div></div>
+      <div class="question-card"><p class="question-kicker" id="questionKicker">SCENE 01</p><h3 id="questionText"></h3><div id="options" class="options"></div></div>
+      <div class="quiz-foot"><button id="prevBtn" class="text-btn" disabled>← 上一题</button><span class="save-note">选择后自动进入下一题 · 回答仅保存在本地</span></div>
+    </section>
+
+    <section id="result" class="result-wrap section-shell hidden">
+      <div class="result-top"><div><p class="eyebrow">YOUR INNER LANDSCAPE</p><h2>你的内在三声部</h2></div><button id="restartBtn" class="text-btn">重新测试 ↗</button></div>
+      <div class="result-hero"><div class="result-hero-copy"><p class="result-label">当下的主旋律</p><h1 id="resultTitle"></h1><p id="resultSummary" class="result-summary"></p></div><div class="result-symbol" id="resultSymbol">ψ</div></div>
+      <div class="score-grid"><div class="score-card id-card"><div class="score-card-top"><span>本我 · ID</span><b id="idScore">0%</b></div><div class="score-track"><i id="idBar"></i></div><p>渴望、直觉、生命力</p></div><div class="score-card ego-card"><div class="score-card-top"><span>自我 · EGO</span><b id="egoScore">0%</b></div><div class="score-track"><i id="egoBar"></i></div><p>协调、现实感、弹性</p></div><div class="score-card superego-card"><div class="score-card-top"><span>超我 · SUPEREGO</span><b id="superegoScore">0%</b></div><div class="score-track"><i id="superegoBar"></i></div><p>价值、责任、理想</p></div></div>
+      <div class="result-columns"><article><p class="eyebrow">A CLOSER LOOK</p><h3>你的心理画像</h3><div id="resultDetail" class="rich-copy"></div></article><aside><div class="quote-mark">“</div><p id="resultQuote"></p><span id="resultQuoteBy">— 给正在阅读的你</span></aside></div>
+      <div class="balance-panel"><div><p class="eyebrow">THE BALANCE</p><h3>给你的一个小练习</h3></div><p id="resultPractice"></p></div>
+      <div class="disclaimer"><span>ⓘ</span><p>这是一份基于弗洛伊德人格结构理论的风格化自我探索工具，并非经过临床验证的心理测验。结果会受当下心情影响，不代表固定人格，也不能替代心理咨询或医学诊断。</p></div>
+    </section>
+  </main>
+  <footer><span>内在三声部 / 2026</span><span>DESIGNED FOR QUIET REFLECTION</span></footer>
+  <script src="script.js"></script>
+</body>
+</html>

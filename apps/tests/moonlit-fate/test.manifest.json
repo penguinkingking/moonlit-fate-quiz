@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "slug": "moonlit-fate",
+  "name": "月下心笺",
+  "description": "16 道心动情境测试",
+  "version": "1.0.0",
+  "mode": "custom-react",
+  "entry": "index.html",
+  "legacyRoot": true,
+  "licenseRequired": true,
+  "codePrefix": "DL13",
+  "resultStorageKey": "moonlit-fate:last-result:v1"
+}

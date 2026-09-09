@@ -15,29 +15,6 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
-      - name: Restore source tree from web upload
-        shell: bash
-        run: |
-          set -e
-          mkdir -p app components/ui lib offline public/art/characters server hooks scripts
-          mv page.tsx app/page.tsx
-          mv layout.tsx app/layout.tsx
-          mv globals.css app/globals.css
-          mv portrait-backgrounds.css app/portrait-backgrounds.css
-          mv art.ts license.ts quiz.ts utils.ts lib/
-          mv dialog.tsx progress.tsx radio-group.tsx components/ui/
-          mv main.tsx package.mjs verify.mjs offline/
-          mv index.mjs server/index.mjs
-          mv use-mobile.ts hooks/
-          mv generate-codes.mjs scripts/
-          mv ayato.jpg azusa.jpg carla.jpg kanato.jpg kino.jpg kou.jpg laito.jpg reiji.jpg ruki.jpg shin.jpg shu.jpg subaru.jpg yuma.jpg public/art/characters/
-          mv hero.png public/art/hero.png
-          mv favicon.svg public/favicon.svg
-          cat > components/ui/button.tsx <<'EOF'
-          import * as React from 'react';
-          export const Button = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(({ className = '', ...props }, ref) => <button ref={ref} className={className} {...props} />);
-          Button.displayName = 'Button';
-          EOF
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -49,4 +26,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: ghcr.io/${{ github.repository_owner }}/moonlit-fate-quiz:latest
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/moonlit-fate-quiz:latest
+            ghcr.io/${{ github.repository_owner }}/moonlit-fate-quiz:${{ github.sha }}
