@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import vm from "node:vm";
 
-const source = await readFile("apps/tests/inner-voices/script.js", "utf8");
+const source = await readFile("测试项目/inner-voices/script.js", "utf8");
 const noop = () => {};
 const element = {
   addEventListener: noop,

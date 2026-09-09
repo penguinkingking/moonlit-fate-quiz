@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/postcss';
 import { fileURLToPath } from 'node:url';
 
-const moonlitRoot = fileURLToPath(new URL('./apps/tests/moonlit-fate/', import.meta.url));
+const moonlitRoot = fileURLToPath(new URL('./测试项目/moonlit-fate/', import.meta.url));
 
 export default defineConfig({
   define: { 'process.env.NODE_ENV': JSON.stringify('production') },
@@ -15,7 +15,7 @@ export default defineConfig({
     outDir: fileURLToPath(new URL('./web-build/tests/moonlit-fate', import.meta.url)),
     emptyOutDir: false,
     lib: {
-      entry: fileURLToPath(new URL('./apps/tests/moonlit-fate/entry/main.tsx', import.meta.url)),
+      entry: fileURLToPath(new URL('./测试项目/moonlit-fate/entry/main.tsx', import.meta.url)),
       name: 'MoonlitFate',
       formats: ['iife'],
       fileName: 'app',

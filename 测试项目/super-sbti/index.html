@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="超级 SBTI：一份结构认真、结论荒唐的互联网行为类型测试。">
+  <meta name="theme-color" content="#f4f0e7">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23d8ff37'/%3E%3Cpath d='M15 14h34v8H25v7h20v21H15v-8h20v-6H15z' fill='%2311110f'/%3E%3C/svg%3E">
+  <title>超级 SBTI · 互联网行为故障鉴定</title>
+  <link rel="stylesheet" href="/shared/license-gate.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="page-noise" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <button class="brand" id="brandButton" type="button" aria-label="超级 SBTI">
+      <span class="brand-block">S</span><span>超级 SBTI</span><sup>β</sup>
+    </button>
+    <div class="header-right">
+      <span class="status-light"><i></i>系统勉强运行中</span>
+      <button class="icon-button" id="lastResultButton" type="button" aria-label="查看上次结果" title="查看上次结果" disabled>↺</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="screen screen-active intro-screen" id="introScreen" aria-labelledby="introTitle">
+      <div class="intro-copy">
+        <p class="eyebrow"><span>SB-16</span> SYSTEM BEHAVIOR TYPOLOGY-ish INDEX</p>
+        <h1 id="introTitle">测测你是哪种<br><mark>互联网故障</mark></h1>
+        <p class="intro-lede">它不会理解你，但会非常自信地误解你。请把人格暂时寄存在前台，测试结束后凭小票领取。</p>
+        <div class="intro-actions">
+          <button class="primary-button" id="startButton" type="button"><span>同意被误判</span><b>→</b></button>
+          <span class="duration-note">16 个生活事故 · 约 4 分钟</span>
+        </div>
+        <div class="intro-facts" aria-label="测试信息">
+          <div><b>12</b><span>种常规故障</span></div>
+          <div><b>01</b><span>份隐藏权限</span></div>
+          <div><b>0%</b><span>学术含量</span></div>
+        </div>
+      </div>
+
+      <div class="hero-machine" aria-label="一台正在胡乱分析人格的老式电脑">
+        <span class="sticker sticker-one">人格<br>散装</span>
+        <span class="sticker sticker-two">内部<br>资料</span>
+        <span class="tape tape-one" aria-hidden="true"></span>
+        <div class="crt">
+          <div class="crt-top"><i></i><span>SUPER SBTI 95</span><b>×</b></div>
+          <div class="crt-screen">
+            <div class="screen-dialog">
+              <span class="pixel-face" aria-hidden="true">◉_◉</span>
+              <p>正在读取你<br>并不存在的稳定人格</p>
+              <div class="fake-progress"><i></i></div>
+              <small>预计剩余：一辈子</small>
+            </div>
+            <span class="cursor-square" aria-hidden="true"></span>
+          </div>
+          <div class="crt-controls"><i></i><i></i><i></i><span>SBTI READY</span></div>
+        </div>
+        <div class="machine-base"><span></span><span></span></div>
+        <div class="receipt" aria-hidden="true">
+          <b>人格临时寄存票</b>
+          <span>NO. 000404</span>
+          <span>可信度　░░░░░░</span>
+          <span>荒唐度　██████</span>
+          <i></i>
+          <strong>谢谢惠顾</strong>
+        </div>
+        <button class="danger-button" id="dangerButton" type="button">不要按</button>
+        <span class="machine-caption">本机不承担误诊后的群聊后果</span>
+      </div>
+
+      <div class="marquee" aria-hidden="true">
+        <div><span>本测试无法用于求职</span><b>✦</b><span>也无法用于相亲</span><b>✦</b><span>更无法用于了解自己</span><b>✦</b><span>本测试无法用于求职</span><b>✦</b><span>也无法用于相亲</span><b>✦</b><span>更无法用于了解自己</span></div>
+      </div>
+    </section>
+
+    <section class="screen quiz-screen" id="quizScreen" aria-labelledby="questionText" hidden>
+      <div class="quiz-progress-wrap">
+        <div class="quiz-progress-meta">
+          <span id="questionNumber">事故 01 / 16</span>
+          <span id="progressRemark">人格尚未出现明显裂纹</span>
+        </div>
+        <div class="quiz-progress" role="progressbar" aria-valuemin="1" aria-valuemax="16" aria-valuenow="1" aria-label="答题进度"><i id="progressBar"></i></div>
+      </div>
+
+      <div class="quiz-layout">
+        <aside class="quiz-aside" aria-hidden="true">
+          <span class="aside-index" id="asideIndex">01</span>
+          <p>QUESTIONABLE<br>QUESTIONNAIRE</p>
+          <div class="aside-doodle">↯</div>
+          <span class="aside-stamp" id="asideStamp">正常</span>
+        </aside>
+
+        <article class="question-panel">
+          <div class="question-meta">
+            <span id="questionScene">生活事故现场</span>
+            <button class="glitch-button" id="glitchButton" type="button" aria-label="重新连接题目" title="信号似乎不太稳定">⌁</button>
+          </div>
+          <h2 id="questionText"></h2>
+          <p class="question-note" id="questionNote"></p>
+          <div class="options" id="options" role="group" aria-label="选项"></div>
+          <div class="question-footer">
+            <button class="back-button" id="backButton" type="button">← 上一场事故</button>
+            <span>答案已在本机偷偷保存</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="screen loading-screen" id="loadingScreen" aria-live="polite" hidden>
+      <div class="loading-art" aria-hidden="true">
+        <span class="loading-orbit orbit-a">社交</span>
+        <span class="loading-orbit orbit-b">嘴硬</span>
+        <span class="loading-orbit orbit-c">开摆</span>
+        <div class="loading-core">?</div>
+      </div>
+      <p class="eyebrow">正在强行建立因果关系</p>
+      <h2 id="loadingText">把你的选择塞进统计学微波炉...</h2>
+      <div class="loading-track"><i id="loadingBar"></i></div>
+      <span id="loadingPercent">0%</span>
+    </section>
+
+    <section class="screen result-screen" id="resultScreen" aria-labelledby="resultTitle" hidden>
+      <div class="result-toolbar">
+        <span>SUPER SBTI / 鉴定回执</span>
+        <button class="restart-top" id="restartTopButton" type="button">↺ 重测</button>
+      </div>
+
+      <div class="result-hero">
+        <div class="result-identity">
+          <p class="result-kicker">您的互联网行为故障为</p>
+          <div class="result-code-row"><span id="resultCode">????</span><i id="resultRarity">常见故障</i></div>
+          <h1 id="resultTitle">加载中</h1>
+          <p id="resultSubtitle"></p>
+        </div>
+        <div class="result-seal" id="resultSeal" aria-hidden="true"><span>已确诊</span><b>?</b></div>
+        <div class="result-receipt">
+          <span>DIAGNOSIS NO.</span><b id="resultNumber">SB-0000</b>
+          <span>答题完整度</span><b>看起来完整</b>
+          <span>人格保修期</span><b>至下次睡醒</b>
+          <span>算法态度</span><b>拒不道歉</b>
+        </div>
+      </div>
+
+      <div class="share-strip">
+        <p id="resultHook">你的故障说明正在打印。</p>
+        <div>
+          <button class="secondary-button" id="copyButton" type="button"><span>□</span>复制鉴定</button>
+          <button class="primary-button compact" id="shareButton" type="button"><span>转发病历</span><b>↗</b></button>
+        </div>
+      </div>
+
+      <section class="metric-section" aria-labelledby="metricTitle">
+        <div class="section-heading"><span>01</span><div><p>SUSPICIOUS METRICS</p><h2 id="metricTitle">六项不靠谱指标</h2></div></div>
+        <div class="metric-grid" id="metricGrid"></div>
+        <p class="metric-footnote" id="metricFootnote"></p>
+      </section>
+
+      <section class="diagnosis-section" aria-labelledby="diagnosisTitle">
+        <div class="section-heading"><span>02</span><div><p>LONG, FOR NO REASON</p><h2 id="diagnosisTitle">长篇故障解析</h2></div></div>
+        <div class="diagnosis-lede" id="diagnosisLede"></div>
+        <div class="diagnosis-list" id="diagnosisList"></div>
+      </section>
+
+      <section class="manual-section" aria-labelledby="manualTitle">
+        <div class="section-heading"><span>03</span><div><p>USER MANUAL</p><h2 id="manualTitle">本人使用说明书</h2></div></div>
+        <div class="manual-table" id="manualTable"></div>
+      </section>
+
+      <blockquote class="result-quote"><span>“</span><p id="resultQuote"></p><cite>— 超级 SBTI 不负责任研究所</cite></blockquote>
+
+      <div class="result-actions">
+        <button class="primary-button" id="restartButton" type="button"><span>换一种方式误判</span><b>↺</b></button>
+        <button class="text-button" id="backHomeButton" type="button">返回故障大厅 ↑</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>SUPER SBTI RESEARCH UNIT</span>
+    <button id="versionButton" type="button">BUILD 404.16</button>
+    <span>结果仅供笑一下，笑完也不负责</span>
+  </footer>
+
+  <dialog class="terminal-dialog" id="terminalDialog">
+    <form method="dialog" class="terminal-window">
+      <div class="terminal-head"><span>人格系统终端</span><button value="cancel" aria-label="关闭">×</button></div>
+      <div class="terminal-body">
+        <p>SUPER_SBTI BIOS v0.0.404</p>
+        <p>检测到用户正在乱点。</p>
+        <label for="terminalInput">guest@sbti:~$</label>
+        <div class="terminal-command"><input id="terminalInput" autocomplete="off" spellcheck="false"><button id="terminalRunButton" type="button">↵</button></div>
+        <pre id="terminalOutput">权限不足，但态度很好。</pre>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite" aria-atomic="true"></div>
+  <div class="konami-confetti" id="konamiConfetti" aria-hidden="true"></div>
+
+  <noscript><p class="noscript">本测试需要 JavaScript 才能继续胡说八道。</p></noscript>
+  <script src="/shared/license-gate.js"></script>
+  <script>TestPlatformLicense.start({ testSlug: "super-sbti", testName: "超级 SBTI" });</script>
+  <script src="questions.js"></script>
+  <script src="profiles.js"></script>
+  <script src="profile-extensions.js"></script>
+  <script src="scoring.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

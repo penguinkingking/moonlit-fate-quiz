@@ -40,3 +40,12 @@ next-env.d.ts
 /web-build/
 /data/
 tsconfig.tsbuildinfo
+
+# local-only project materials
+/本地归档/
+/测试项目/*/本地资料/*/
+/测试项目/*/本地资料/原始素材/
+/测试项目/*/本地资料/生成主视觉/
+/测试项目/*/本地资料/生成人物图/
+/测试项目/*/本地资料/生成提示词/
+/测试项目/*/本地资料/兑换码/

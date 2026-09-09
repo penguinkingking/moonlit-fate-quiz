@@ -40,8 +40,8 @@ const moonlitPage = `<!doctype html>
 </html>`;
 await writeFile(resolve(moonlitOutput, "index.html"), moonlitPage, "utf8");
 
-await cp(resolve(root, "apps", "tests", "moonlit-fate", "public", "art"), resolve(output, "art"), { recursive: true });
-await cp(resolve(root, "apps", "tests", "moonlit-fate", "public", "favicon.svg"), resolve(output, "art", "favicon.svg"));
+await cp(resolve(root, "测试项目", "moonlit-fate", "public", "art"), resolve(output, "art"), { recursive: true });
+await cp(resolve(root, "测试项目", "moonlit-fate", "public", "favicon.svg"), resolve(output, "art", "favicon.svg"));
 await mkdir(resolve(output, "shared"), { recursive: true });
 await cp(resolve(root, "packages", "test-sdk", "license-gate.js"), resolve(output, "shared", "license-gate.js"));
 await cp(resolve(root, "packages", "test-sdk", "license-gate.css"), resolve(output, "shared", "license-gate.css"));
@@ -54,7 +54,10 @@ for (const manifestPath of registry.tests) {
   if (manifest.slug === "moonlit-fate") continue;
   await cp(source, resolve(output, "tests", manifest.slug), {
     recursive: true,
-    filter: (entry) => !entry.endsWith("test.manifest.json"),
+    filter: (entry) =>
+      !entry.endsWith("test.manifest.json") &&
+      !entry.endsWith("项目说明.md") &&
+      !entry.includes("本地资料"),
   });
 }
 

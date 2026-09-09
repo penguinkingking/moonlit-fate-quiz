@@ -13,7 +13,8 @@ if (!name) throw new Error("必须提供 --name");
 if (!new Set(["standard", "custom-static"]).has(mode)) throw new Error("--mode 目前支持 standard 或 custom-static");
 
 const root = process.cwd();
-const directory = resolve(root, "apps", "tests", slug);
+const testsDirectory = resolve(root, "测试项目");
+const directory = resolve(testsDirectory, slug);
 const manifest = {
   schemaVersion: 1,
   slug,
@@ -27,8 +28,16 @@ const manifest = {
   codePrefix: slug.replace(/[^a-z0-9]/g, "").slice(0, 6).toUpperCase(),
   resultStorageKey: `test-platform:${slug}:last-result`,
 };
+await mkdir(testsDirectory, { recursive: true });
 await mkdir(directory, { recursive: false });
 await writeFile(resolve(directory, "test.manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+const modeLabel = mode === "standard" ? "标准配置测试" : "自定义静态测试";
+await writeFile(resolve(directory, "项目说明.md"), `# ${name}\n\n## 项目概况\n\n- 英文标识：\`${slug}\`\n- 实现方式：${modeLabel}\n- 公网入口：\`/tests/${slug}/\`（本地验收通过后才发布）\n- 兑换码前缀：\`${manifest.codePrefix}\`\n- 当前状态：本地制作中\n\n## 内容与设计\n\n在这里持续记录测试目的、题目结构、结果算法、页面风格、素材来源和验收情况。\n\n## 发布规则\n\n本地验收完成前不上传。只有用户明确批准后，才随整个平台构建 Docker 镜像并更新 Sealos。\n`, "utf8");
+const localMaterials = resolve(directory, "本地资料");
+await mkdir(resolve(localMaterials, "原始素材"), { recursive: true });
+await mkdir(resolve(localMaterials, "生成记录"), { recursive: true });
+await mkdir(resolve(localMaterials, "兑换码"), { recursive: true });
+await writeFile(resolve(localMaterials, "说明.md"), `# ${name}本地资料\n\n这里保存原始素材、生成过程文件和明文兑换码。这些子目录不会进入 GitHub 或 Docker 镜像。网站实际使用的成品资源应放在测试代码目录中。\n`, "utf8");
 
 if (mode === "standard") {
   const config = {
@@ -55,6 +64,6 @@ if (mode === "standard") {
 
 const registryPath = resolve(root, "tests-registry.json");
 const registry = JSON.parse(await readFile(registryPath, "utf8"));
-registry.tests.push(`apps/tests/${slug}/test.manifest.json`);
+registry.tests.push(`测试项目/${slug}/test.manifest.json`);
 await writeFile(registryPath, `${JSON.stringify(registry, null, 2)}\n`, "utf8");
 console.log(`Created ${name}: ${directory}`);

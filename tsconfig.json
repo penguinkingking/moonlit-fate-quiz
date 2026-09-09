@@ -15,7 +15,7 @@
     "jsx": "react-jsx",
     "incremental": true,
     "paths": {
-      "@/*": ["./apps/tests/moonlit-fate/*"]
+      "@/*": ["./测试项目/moonlit-fate/*"]
     }
   },
   "include": [
@@ -25,5 +25,5 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", "work", "web-build", "offline-build"]
+  "exclude": ["node_modules", "work", "web-build", "offline-build", "本地归档"]
 }

@@ -70,6 +70,9 @@ test("platform supports isolated tests, admin fulfillment, and backups", { timeo
   const innerPage = await fetch(`${baseUrl}/tests/inner-voices/`);
   assert.equal(innerPage.status, 200);
   assert.match(await innerPage.text(), /TestPlatformLicense/);
+  const superSbtiPage = await fetch(`${baseUrl}/tests/super-sbti/`);
+  assert.equal(superSbtiPage.status, 200);
+  assert.match(await superSbtiPage.text(), /超级 SBTI/);
   const adminPage = await fetch(`${baseUrl}/admin/`);
   assert.equal(adminPage.status, 200);
   assert.match(await adminPage.text(), /测试产品管理后台/);
@@ -94,7 +97,7 @@ test("platform supports isolated tests, admin fulfillment, and backups", { timeo
   const adminPost = (path, body) => adminFetch(path, { method: "POST", body: JSON.stringify(body) });
 
   const tests = await (await adminFetch("/api/admin/tests")).json();
-  assert.deepEqual(tests.tests.map((item) => item.slug), ["moonlit-fate", "inner-voices"]);
+  assert.deepEqual(tests.tests.map((item) => item.slug), ["moonlit-fate", "inner-voices", "super-sbti"]);
 
   const generatedResponse = await adminPost("/api/admin/licenses/generate", { testSlug: "inner-voices", count: 12, batchName: "integration" });
   assert.equal(generatedResponse.status, 201);
@@ -119,6 +122,16 @@ test("platform supports isolated tests, admin fulfillment, and backups", { timeo
     body: JSON.stringify({ testSlug: "moonlit-fate", code: generated.codes[1], deviceId: "integration-device-0002" }),
   });
   assert.equal(crossTest.status, 404);
+
+  const superCodesResponse = await adminPost("/api/admin/licenses/generate", { testSlug: "super-sbti", count: 2, batchName: "super-sbti-integration" });
+  assert.equal(superCodesResponse.status, 201);
+  const superCodes = await superCodesResponse.json();
+  assert.match(superCodes.codes[0], /^SUPERS-/);
+  const superCrossTest = await fetch(`${baseUrl}/api/public/licenses/redeem`, {
+    method: "POST", headers: { "content-type": "application/json" },
+    body: JSON.stringify({ testSlug: "super-sbti", code: generated.codes[2], deviceId: "integration-device-0003" }),
+  });
+  assert.equal(superCrossTest.status, 404);
 
   const allocations = await Promise.all(Array.from({ length: 8 }, (_, index) => adminPost("/api/admin/licenses/allocate", {
     testSlug: "inner-voices", orderRef: `order-${index}`,

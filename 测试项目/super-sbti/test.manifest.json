@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "slug": "super-sbti",
+  "name": "超级 SBTI",
+  "description": "16 道生活事故题，测出你的互联网行为故障",
+  "version": "1.0.0",
+  "mode": "custom-static",
+  "entry": "index.html",
+  "legacyRoot": false,
+  "licenseRequired": true,
+  "codePrefix": "SUPERS",
+  "resultStorageKey": "test-platform:super-sbti:last-result"
+}

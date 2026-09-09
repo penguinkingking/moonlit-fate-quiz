@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {characters,questions,scoreAnswers,dimensions,evidenceFor} from './apps/tests/moonlit-fate/lib/quiz.ts';
+import {characters,questions,scoreAnswers,dimensions,evidenceFor} from './测试项目/moonlit-fate/lib/quiz.ts';
 assert.equal(characters.length,13);
 assert.equal(new Set(characters.map(c=>c.id)).size,13);
 assert.deepEqual([0,1,2,3].map(g=>characters.filter(c=>c.group===g).length),[6,4,2,1]);

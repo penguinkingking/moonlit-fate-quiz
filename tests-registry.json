@@ -1,7 +1,8 @@
 {
   "schemaVersion": 1,
   "tests": [
-    "apps/tests/moonlit-fate/test.manifest.json",
-    "apps/tests/inner-voices/test.manifest.json"
+    "测试项目/moonlit-fate/test.manifest.json",
+    "测试项目/inner-voices/test.manifest.json",
+    "测试项目/super-sbti/test.manifest.json"
   ]
 }

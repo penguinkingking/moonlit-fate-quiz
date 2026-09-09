@@ -20,6 +20,7 @@ for (const path of registry.tests) {
   prefixes.add(manifest.codePrefix);
   if (!manifest.name || !manifest.version || !manifest.mode || !manifest.entry) throw new Error(`${path}: 缺少必填字段`);
   await access(resolve(directory, manifest.entry));
+  await access(resolve(directory, "项目说明.md"));
 
   const sourceFiles = [manifestPath, resolve(directory, manifest.entry)];
   if (manifest.mode === "standard") {
