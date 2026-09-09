@@ -225,8 +225,8 @@ docs/                           设计、实施、部署和恢复文档
 
 ```text
 npm run test:new -- --slug new-test --name "新测试" --mode standard
-npm run test:validate -- --slug new-test
-npm run test:build -- --slug new-test
+npm run test:validate
+npm run build:platform
 ```
 
 生成器负责目录、清单、示例页面、授权 SDK 接入和校验脚本，不替测试决定创意。校验至少覆盖：
