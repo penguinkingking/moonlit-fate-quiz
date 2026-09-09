@@ -21,8 +21,7 @@ COPY --from=build /app/web-build ./web-build
 ENV PORT=8787
 ENV DATA_DIR=/app/data
 RUN mkdir -p /app/data && chown -R node:node /app
-USER node
 EXPOSE 8787
 VOLUME ["/app/data"]
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 CMD node -e "fetch('http://127.0.0.1:'+(process.env.PORT||8787)+'/health/ready').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
-CMD ["node", "server/index.mjs"]
+CMD ["node", "server/container-entrypoint.mjs"]
