@@ -65,14 +65,15 @@ const sha = (args.sha || git(["rev-parse", "HEAD"])).toLowerCase();
 if (!/^[0-9a-f]{40}$/.test(sha)) throw new Error("Release SHA must be a full 40-character Git commit SHA");
 const remote = git(["config", "--get", "remote.origin.url"]);
 const repository = repositoryFromRemote(remote);
-const remoteMain = git(["ls-remote", "origin", "refs/heads/main"]).split(/\s+/)[0]?.toLowerCase();
+const token = githubCredential();
+const remoteReference = await github(token, repository, "/git/ref/heads/main");
+const remoteMain = remoteReference.object.sha.toLowerCase();
 if (remoteMain !== sha) throw new Error("The release commit is not the current origin/main; push the approved commit first");
 
 const registry = JSON.parse(await readFile("tests-registry.json", "utf8"));
 const expectedTests = String(args["expected-tests"] || registry.tests?.length || registry.length || 0);
 if (!/^\d+$/.test(expectedTests) || Number(expectedTests) < 1) throw new Error("Expected test count is invalid");
 
-const token = githubCredential();
 const workflowPath = "/actions/workflows/release-production.yml";
 const before = await github(token, repository, `${workflowPath}/runs?event=workflow_dispatch&branch=main&per_page=20`);
 const existingRunIds = new Set((before.workflow_runs || []).map((run) => run.id));

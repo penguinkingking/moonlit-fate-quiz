@@ -67,3 +67,9 @@ test("GitHub API push fallback refuses stale parents and verifies the complete t
     "tree.sha !== localTree", "storeRemoteCommit(created)", "hash-object", "force: false", "update-ref",
   ]) assert.match(fallback, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });
+
+test("production trigger verifies origin/main without the unreliable Git transport", async () => {
+  const trigger = await readFile("scripts/trigger-production-release.mjs", "utf8");
+  assert.match(trigger, /\/git\/ref\/heads\/main/);
+  assert.doesNotMatch(trigger, /ls-remote/);
+});
