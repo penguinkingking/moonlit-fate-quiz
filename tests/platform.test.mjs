@@ -73,6 +73,9 @@ test("platform supports isolated tests, admin fulfillment, and backups", { timeo
   const superSbtiPage = await fetch(`${baseUrl}/tests/super-sbti/`);
   assert.equal(superSbtiPage.status, 200);
   assert.match(await superSbtiPage.text(), /超级 SBTI/);
+  const quickRechargePage = await fetch(`${baseUrl}/tests/quick-recharge/`);
+  assert.equal(quickRechargePage.status, 200);
+  assert.match(await quickRechargePage.text(), /quick-recharge/);
   const adminPage = await fetch(`${baseUrl}/admin/`);
   assert.equal(adminPage.status, 200);
   assert.match(await adminPage.text(), /测试产品管理后台/);
@@ -97,7 +100,7 @@ test("platform supports isolated tests, admin fulfillment, and backups", { timeo
   const adminPost = (path, body) => adminFetch(path, { method: "POST", body: JSON.stringify(body) });
 
   const tests = await (await adminFetch("/api/admin/tests")).json();
-  assert.deepEqual(tests.tests.map((item) => item.slug), ["moonlit-fate", "inner-voices", "super-sbti"]);
+  assert.deepEqual(tests.tests.map((item) => item.slug), ["moonlit-fate", "inner-voices", "super-sbti", "quick-recharge"]);
 
   const generatedResponse = await adminPost("/api/admin/licenses/generate", { testSlug: "inner-voices", count: 12, batchName: "integration" });
   assert.equal(generatedResponse.status, 201);

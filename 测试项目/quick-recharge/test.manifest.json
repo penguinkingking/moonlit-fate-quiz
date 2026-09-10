@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "slug": "quick-recharge",
+  "name": "此刻充电方式",
+  "description": "3 题找到此刻最适合你的轻量充电方式",
+  "version": "0.1.0",
+  "mode": "standard",
+  "entry": "index.html",
+  "legacyRoot": false,
+  "licenseRequired": true,
+  "codePrefix": "QUICKR",
+  "resultStorageKey": "test-platform:quick-recharge:last-result"
+}
