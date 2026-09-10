@@ -64,6 +64,6 @@ test("GitHub API push fallback refuses stale parents and verifies the complete t
   const fallback = await readFile("scripts/push-main-via-github-api.mjs", "utf8");
   for (const required of [
     'approval !== "正式开放"', "Working tree must be clean", "remoteHead !== localParent",
-    "tree.sha !== localTree", "force: false", "update-ref",
+    "tree.sha !== localTree", "storeRemoteCommit(created)", "hash-object", "force: false", "update-ref",
   ]) assert.match(fallback, new RegExp(required.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 });

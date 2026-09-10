@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import { createHash } from "node:crypto";
 
 const approvalIndex = process.argv.indexOf("--approval");
 const approval = approvalIndex >= 0 ? process.argv[approvalIndex + 1] : "";
@@ -48,6 +49,55 @@ async function github(token, repository, path, options = {}) {
   const payload = response.status === 204 ? null : await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(`GitHub API ${path} returned ${response.status}: ${payload?.message || "request failed"}`);
   return payload;
+}
+
+function commitRaw(commit, authorZone, committerZone, finalNewline) {
+  const authorEpoch = Math.floor(new Date(commit.author.date).getTime() / 1000);
+  const committerEpoch = Math.floor(new Date(commit.committer.date).getTime() / 1000);
+  return [
+    `tree ${commit.tree.sha}`,
+    ...commit.parents.map((parent) => `parent ${parent.sha}`),
+    `author ${commit.author.name} <${commit.author.email}> ${authorEpoch} ${authorZone}`,
+    `committer ${commit.committer.name} <${commit.committer.email}> ${committerEpoch} ${committerZone}`,
+    "",
+    `${commit.message}${finalNewline ? "\n" : ""}`,
+  ].join("\n");
+}
+
+function gitObjectSha(type, content) {
+  const body = Buffer.from(content, "utf8");
+  return createHash("sha1").update(`${type} ${body.length}\0`).update(body).digest("hex");
+}
+
+function timezoneOffsets() {
+  const offsets = [];
+  for (let minutes = -12 * 60; minutes <= 14 * 60; minutes += 15) {
+    const sign = minutes < 0 ? "-" : "+";
+    const absolute = Math.abs(minutes);
+    offsets.push(`${sign}${String(Math.floor(absolute / 60)).padStart(2, "0")}${String(absolute % 60).padStart(2, "0")}`);
+  }
+  return offsets;
+}
+
+function storeRemoteCommit(commit) {
+  const offsets = timezoneOffsets();
+  let matchingRaw = null;
+  for (const authorZone of offsets) {
+    for (const committerZone of offsets) {
+      for (const finalNewline of [false, true]) {
+        const raw = commitRaw(commit, authorZone, committerZone, finalNewline);
+        if (gitObjectSha("commit", raw) === commit.sha) {
+          matchingRaw = raw;
+          break;
+        }
+      }
+      if (matchingRaw) break;
+    }
+    if (matchingRaw) break;
+  }
+  if (!matchingRaw) throw new Error("Could not reconstruct the GitHub commit object before updating main");
+  const stored = git(["hash-object", "-t", "commit", "-w", "--stdin"], { input: matchingRaw });
+  if (stored !== commit.sha) throw new Error("Stored Git commit does not match the GitHub commit SHA");
 }
 
 if (approval !== "正式开放") throw new Error('GitHub API fallback requires --approval "正式开放"');
@@ -103,6 +153,7 @@ const created = await github(token, repository, "/git/commits", {
     parents: [remoteHead],
   }),
 });
+storeRemoteCommit(created);
 await github(token, repository, "/git/refs/heads/main", {
   method: "PATCH",
   body: JSON.stringify({ sha: created.sha, force: false }),
