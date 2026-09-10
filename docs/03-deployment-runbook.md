@@ -174,3 +174,12 @@ Sealos 命名空间中存在 `ServiceAccount/Role/RoleBinding` 各一个，名�
 - 系统专用验收码最终状态为 `allocated`，保留订单标识且未绑定设备；普通买家库存未被消耗。
 - GitHub Secrets 四项均存在；受限 Sealos 身份不能读取 Secret。任何实际凭据和验收码都未写入 Git、日志或本文。
 - 本机 Git HTTPS 两次连接失败后，GitHub API 备用路径通过父提交保护与完整 tree 哈希核对完成发布；修复后的备用脚本再次实测成功。
+
+## 11. 2026-09-11 此刻充电方式发布记录
+
+- 正式镜像：`ghcr.io/penguinkingking/moonlit-fate-quiz:d3251e865a61fcea001c7f3f5d22e1c9b2d31e8e`。
+- 首次完整发布提交 `3adc6724f702b0658e3ee4355740dfea4c9d590c` 成功上线；公网复核发现标准测试未声明图标而产生 `/favicon.ico` 404，随后在生成器和本测试中补充 `/art/favicon.svg` 并加入回归断言。
+- 修正版镜像构建运行 `34511494618` 成功；生产发布运行 `34511566736` 成功。生产前备份、固定镜像检查、受限 Sealos 部署、就绪等待、手机浏览器验收和临时凭据清理均通过，回滚未触发。
+- 公网 `/health/live` 和 `/health/ready` 均返回 `200`；数据库正常、schema 版本 1、测试数 4。根页、后台、4 套测试入口及站点图标均返回 `200`。
+- 390×844 Chrome 复核“此刻充电方式”兑换门正常，无横向溢出、失败资源或控制台错误。
+- 本机 Git HTTPS 连接连续失败后按预案使用 GitHub API 备用上传，父提交与完整 tree 哈希核对通过。系统 Node.js 24.18.0 在 Vite 转换时发生 Windows 原生异常，改用工作区随附 Node.js 24.19.0 后同一套五组发布检查全部通过；GitHub Linux 构建也通过。
