@@ -35,6 +35,7 @@
 - 升级后仍需执行 `docker info` 和实际镜像构建验证。
 - 不执行 Factory Reset，不卸载 Docker，不清理镜像或数据卷来解决单纯的 socket 启动问题。
 - 快速恢复一次后仍失败，停止继续处理本机 Docker，保留日志并改用 GitHub Actions 的 Linux Docker 构建。
+- `docker info` 检查和一次标准恢复合计控制在 5 分钟左右；超过后即视为本机路径阻塞，不继续反复重启。
 
 ## 镜像构建策略
 

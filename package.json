@@ -10,6 +10,10 @@
     "build": "npm run build:platform",
     "start": "node server/index.mjs",
     "lint": "oxlint",
+    "typecheck": "tsc --noEmit",
+    "check:release": "node scripts/run-release-checks.mjs",
+    "release:production": "node scripts/trigger-production-release.mjs",
+    "push:github-fallback": "node scripts/push-main-via-github-api.mjs",
     "format": "oxfmt",
     "build:online": "npm run build:platform",
     "build:platform": "node scripts/build-platform.mjs",
@@ -18,8 +22,8 @@
     "test": "node --test tests/*.test.mjs && node verify-quiz.mjs && node verify-inner-voices.mjs"
   },
   "dependencies": {
-    "better-sqlite3": "13.0.3",
     "@base-ui/react": "1.7.0",
+    "better-sqlite3": "13.0.3",
     "clsx": "2.1.1",
     "lucide-react": "1.31.0",
     "react": "19.2.8",
@@ -37,6 +41,7 @@
     "oxfmt": "0.61.0",
     "oxlint": "1.76.0",
     "oxlint-tsgolint": "7.0.2001",
+    "playwright-core": "1.63.0",
     "tailwindcss": "4.2.1",
     "typescript": "5.9.3",
     "vite": "8.2.2"

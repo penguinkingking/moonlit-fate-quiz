@@ -4,7 +4,7 @@
 
 ## 1. 生产拓扑
 
-- 单个 Sealos 应用，固定 1 个实例。
+- 单个 Sealos `StatefulSet/moonlit-fate-quiz`，固定 1 个实例；容器名也是 `moonlit-fate-quiz`。
 - 容器监听 `8787`。
 - `/app/data` 挂载至少 1 GiB 的持久化卷，复用当前授权数据卷。
 - 就绪探针：`GET /health/ready`。
@@ -76,9 +76,42 @@
 
 ## 5. 发布与回滚
 
-只有用户明确表示本地验收通过并允许上传后，才进入本节。发布前执行完整测试、生成数据库备份，并记录当前镜像摘要。
-发布后：等待就绪、检查错误日志、验证全部公网入口。
-回滚时：切回上一镜像；只有数据库迁移不向后兼容时才恢复数据库备份。
+只有用户明确表示本地验收通过并允许上传后，才进入本节。日常发布不通过 Sealos 网页手工改镜像，而由 GitHub Actions 使用受限凭据完成。
+
+### 5.1 一次性配置
+
+GitHub 仓库 Actions Secrets 中需要以下四项，只记录名称，不在本文保存值：
+
+| Secret | 用途 |
+| --- | --- |
+| `SEALOS_KUBECONFIG_B64` | `yuanbao-release` 受限身份的 KubeConfig |
+| `PRODUCTION_ADMIN_USERNAME` | 创建备份和验收时登录后台 |
+| `PRODUCTION_ADMIN_PASSWORD` | 与上项配套，只由工作流读取 |
+| `PRODUCTION_SMOKE_CODE` | 永久保留、不对外发放的超级 SBTI 验收码 |
+
+Sealos 命名空间中存在 `ServiceAccount/Role/RoleBinding` 各一个，名称均为 `yuanbao-release`。Role 只允许读取和更新指定的 `StatefulSet/moonlit-fate-quiz`，以及只读查看 Pod、日志和事件；不允许读取 Secret，不含 `create` 或 `delete`。受限身份已实际验证：目标 StatefulSet 可读取、服务端 dry-run 更新可通过、读取 Secret 返回 `403`。
+
+### 5.2 日常发布
+
+1. AI 运行 `npm run check:release`，五组检查顺序执行，每组最长 5 分钟。
+2. AI 检查待提交内容中没有 Secret、数据库和明文兑换码，提交并推送 `main`。
+3. `.github/workflows/publish-image.yml` 在 Linux Docker 中再次执行完整检查，发布 `ghcr.io/penguinkingking/moonlit-fate-quiz:<完整提交 SHA>`；纯 Markdown 或 `docs/` 变更不触发它。
+4. AI 运行 `npm run release:production -- --approval "正式开放"`。助手核对 `origin/main`，触发 `.github/workflows/release-production.yml` 并等待结果。
+5. 工作流最多等待固定 SHA 镜像 5 分钟，然后创建生产数据库备份并确认文件非空。
+6. 工作流记录旧镜像，更新 StatefulSet，最多等待 3 分钟。
+7. `/health/ready` 必须报告数据库正常且测试数量符合注册表；随后检查根页、后台、所有测试页和引用的 JS/CSS。
+8. Chrome 在 390×844 视口执行真实超级 SBTI 流程：兑换、开始、上一题恢复与改选、16 题自动前进、结果页、无横向溢出。
+9. 工作流解绑系统专用码，确认令牌失效、兑换门恢复。全部通过才算发布成功。
+
+若普通 Git 推送连续两次出现连接超时或重置，且 `origin/main` 没有被别人更新，使用 `npm run push:github-fallback -- --approval "正式开放"`。该脚本通过 GitHub 官方 Git Data API 上传当前提交；它拒绝脏工作区、拒绝远端父提交变化、拒绝 tree 哈希不一致，也不会 force push。上传成功后会把当前本地分支对齐到 GitHub 生成的等价提交。
+
+生产发布总体上限 15 分钟。正常路径通常远短于上限；上限用于确保外部服务异常时能尽快给出明确失败点。
+
+### 5.3 自动回滚
+
+部署开始后任一步失败，工作流自动把 StatefulSet 切回发布前记录的完整镜像，并最多等待 3 分钟。发布前备份仍会保留。普通代码回滚不恢复数据库；只有确认新版本写入了不兼容数据时，才按第 6 节人工恢复备份。
+
+失败后依次查看 GitHub Actions 中最先失败的步骤、Pod 状态和日志。不要在 GitHub 与 Sealos 两边同时重复点击发布，也不要通过改成 `latest` 绕过失败。
 
 ## 6. 数据恢复
 

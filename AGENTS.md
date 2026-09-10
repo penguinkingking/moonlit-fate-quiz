@@ -44,6 +44,13 @@
 - 若日志命中已知 Windows AF_UNIX socket 问题，只进行一次标准快速恢复；仍失败则保留现场并改用 GitHub Actions 构建。
 - 发布前备份生产数据库，发布后检查 `/health/ready`、管理后台和所有测试入口。
 - Git 操作保持简单：本地草稿不要求用户管理分支或版本；用户验收后由 AI 完成一次清晰的备份提交和发布记录。
+- 用户明确授权后，先运行 `npm run check:release`，完成敏感信息检查并将批准版本推送到 `main`。再运行 `npm run release:production -- --approval "正式开放"`；脚本只接受已推送到 `origin/main` 的完整提交 SHA。
+- 发布流水线使用 GHCR 的完整提交 SHA，不用 `latest` 决定生产版本。它依次创建数据库备份、更新 Sealos、等待就绪、执行真实手机浏览器答题验收；失败时自动切回上一镜像。
+- 生产更新使用 GitHub Secret 中的受限 Sealos 身份，只能更新 `StatefulSet/moonlit-fate-quiz`，不能读取 Secret、创建或删除资源。不得把 KubeConfig、后台密码或专用验收码写入文件、日志、提交或回复。
+- 镜像最多等待 5 分钟，单次 Sealos 发布或回滚最多等待 3 分钟，整次工作流最多 15 分钟。超时后立即定位失败步骤，不反复进行同一种无效操作。
+- 正式镜像默认交给 GitHub Actions 的 Linux Docker 构建。本机 Docker 只允许一次快速检查或恢复，仍失败就直接走 GitHub，不让 Windows Docker 阻塞发布。
+- 仅文档变更不会触发镜像构建。发布记录可以在成功后单独做一次文档提交。
+- 普通 `git push` 发生连接超时或重置时只快速重试一次；仍失败且远端 `main` 未变化时，运行 `npm run push:github-fallback -- --approval "正式开放"`。备用脚本通过 GitHub Git Data API 发布，并强制核对父提交和整棵 tree 哈希，不执行 force push。
 
 ## 修改纪律
 

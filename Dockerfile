@@ -6,7 +6,7 @@ RUN apt-get update \
 COPY package*.json ./
 RUN npm ci
 COPY . .
-RUN npm run test:validate && npm run build:platform && npm test
+RUN npm run check:release
 
 RUN npm prune --omit=dev
 

@@ -1,0 +1,138 @@
+name: Release production
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_sha:
+        description: Full 40-character commit SHA already published to GHCR
+        required: true
+        type: string
+      approval:
+        description: Production authorization phrase
+        required: true
+        type: string
+      expected_tests:
+        description: Expected number of registered tests
+        required: true
+        default: "3"
+        type: string
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: yuanbao-production
+  cancel-in-progress: false
+
+env:
+  PRODUCTION_BASE_URL: https://vanxwdsqrvsy.sealosbja.site
+  PRODUCTION_ADMIN_USERNAME: ${{ secrets.PRODUCTION_ADMIN_USERNAME }}
+  PRODUCTION_ADMIN_PASSWORD: ${{ secrets.PRODUCTION_ADMIN_PASSWORD }}
+  PRODUCTION_SMOKE_TEST_SLUG: super-sbti
+  PRODUCTION_SMOKE_CODE: ${{ secrets.PRODUCTION_SMOKE_CODE }}
+  EXPECTED_TESTS: ${{ github.event.inputs.expected_tests }}
+  RELEASE_APPROVAL: ${{ github.event.inputs.approval }}
+  RELEASE_IMAGE_SHA: ${{ github.event.inputs.image_sha }}
+  SEALOS_WORKLOAD_KIND: statefulset
+  SEALOS_WORKLOAD: moonlit-fate-quiz
+  SEALOS_CONTAINER: moonlit-fate-quiz
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Validate explicit approval and pinned image
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RELEASE_APPROVAL" = "正式开放"
+          [[ "$RELEASE_IMAGE_SHA" =~ ^[0-9a-f]{40}$ ]]
+
+      - name: Check out the exact release source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.image_sha }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install release helper dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Locate the preinstalled Chrome browser
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome-stable || command -v google-chrome)"
+          test -x "$chrome"
+          echo "PLAYWRIGHT_CHROME_PATH=$chrome" >> "$GITHUB_ENV"
+
+      - name: Verify the pinned image exists
+        shell: bash
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          echo "$GHCR_TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          image="ghcr.io/${{ github.repository_owner }}/moonlit-fate-quiz:$RELEASE_IMAGE_SHA"
+          deadline=$((SECONDS + 300))
+          until docker manifest inspect "$image" >/dev/null 2>&1; do
+            if (( SECONDS >= deadline )); then
+              echo "Pinned image did not appear within 5 minutes" >&2
+              exit 1
+            fi
+            sleep 10
+          done
+
+      - name: Create and verify pre-release database backup
+        run: node scripts/production-release-smoke.mjs backup
+
+      - name: Prepare restricted Sealos credential
+        shell: bash
+        env:
+          SEALOS_KUBECONFIG_B64: ${{ secrets.SEALOS_KUBECONFIG_B64 }}
+        run: |
+          set -euo pipefail
+          umask 077
+          printf '%s' "$SEALOS_KUBECONFIG_B64" | base64 --decode > "$RUNNER_TEMP/sealos-kubeconfig"
+          echo "KUBECONFIG=$RUNNER_TEMP/sealos-kubeconfig" >> "$GITHUB_ENV"
+
+      - name: Set up kubectl
+        uses: azure/setup-kubectl@v4
+
+      - name: Deploy exact image and wait for readiness
+        id: deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          previous_image="$(kubectl get "$SEALOS_WORKLOAD_KIND/$SEALOS_WORKLOAD" -o jsonpath="{.spec.template.spec.containers[?(@.name=='$SEALOS_CONTAINER')].image}")"
+          test -n "$previous_image"
+          echo "previous_image=$previous_image" >> "$GITHUB_OUTPUT"
+          image="ghcr.io/${{ github.repository_owner }}/moonlit-fate-quiz:$RELEASE_IMAGE_SHA"
+          kubectl set image "$SEALOS_WORKLOAD_KIND/$SEALOS_WORKLOAD" "$SEALOS_CONTAINER=$image"
+          kubectl patch "$SEALOS_WORKLOAD_KIND/$SEALOS_WORKLOAD" --type merge -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"yuanbao-release/deployed-at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}}}}"
+          kubectl rollout status "$SEALOS_WORKLOAD_KIND/$SEALOS_WORKLOAD" --timeout=3m
+
+      - name: Run public production smoke test
+        run: node scripts/production-release-smoke.mjs smoke
+
+      - name: Rollback previous image
+        if: failure() && steps.deploy.outputs.previous_image != ''
+        shell: bash
+        env:
+          PREVIOUS_IMAGE: ${{ steps.deploy.outputs.previous_image }}
+        run: |
+          set -euo pipefail
+          kubectl set image "$SEALOS_WORKLOAD_KIND/$SEALOS_WORKLOAD" "$SEALOS_CONTAINER=$PREVIOUS_IMAGE"
+          kubectl patch "$SEALOS_WORKLOAD_KIND/$SEALOS_WORKLOAD" --type merge -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"yuanbao-release/rolled-back-at\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}}}}}"
+          kubectl rollout status "$SEALOS_WORKLOAD_KIND/$SEALOS_WORKLOAD" --timeout=3m
+
+      - name: Remove temporary deployment credential
+        if: always()
+        shell: bash
+        run: rm -f "$RUNNER_TEMP/sealos-kubeconfig"
