@@ -34,6 +34,8 @@ test("new test generator creates the complete local project structure", async (c
     "本地资料/兑换码",
   ];
   await Promise.all(required.map((path) => access(resolve(generated, path))));
+  const generatedHtml = await readFile(resolve(generated, "index.html"), "utf8");
+  assert.match(generatedHtml, /<link rel="icon" href="\/art\/favicon\.svg">/);
 
   const registry = JSON.parse(await readFile(resolve(temporaryRoot, "tests-registry.json"), "utf8"));
   assert.ok(registry.tests.includes("测试项目/generator-check/test.manifest.json"));
