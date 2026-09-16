@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "slug": "city-match",
+  "name": "你适合的城市",
+  "description": "从性格、生活、职业、气候与文化偏好出发，匹配更适合你的中国城市。",
+  "version": "0.1.0",
+  "mode": "custom-static",
+  "entry": "index.html",
+  "legacyRoot": false,
+  "licenseRequired": true,
+  "codePrefix": "CITYMA",
+  "resultStorageKey": "test-platform:city-match:last-result"
+}

@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="zh-CN" data-test-slug="city-match">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="用 46 道题，从性格、生活、职业、气候和文化偏好中找到更适合你的中国城市。">
+  <meta name="theme-color" content="#f4f2ed">
+  <title>你适合的城市 · 城市适配测试</title>
+  <link rel="icon" href="/art/favicon.svg">
+  <link rel="stylesheet" href="/shared/license-gate.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <button class="brand" id="homeButton" type="button" aria-label="返回测试首页">
+      <span class="brand-mark" aria-hidden="true">城</span>
+      <span><b>你适合的城市</b><small>城市生活适配测试</small></span>
+    </button>
+    <button class="last-result-button" id="lastResultButton" type="button" disabled>查看上一次结果</button>
+  </header>
+
+  <main>
+    <section class="screen intro-screen screen-active" id="introScreen" aria-labelledby="introTitle">
+      <div class="intro-copy">
+        <p class="eyebrow">不是哪里最好，而是哪里更像你的生活</p>
+        <h1 id="introTitle">哪一座城市<br>更适合你？</h1>
+        <p class="intro-lede">46 个真实生活选择，从个人性格、生活偏好、职业发展、气候感受与文化氛围中，拼出你的城市适配图谱。</p>
+        <div class="intro-actions">
+          <button class="primary-button" id="startButton" type="button">开始测试 <span>→</span></button>
+          <span>约 8 分钟 · 选择后自动进入下一题</span>
+        </div>
+      </div>
+
+      <aside class="intro-panel" aria-label="测试信息">
+        <div class="city-orbit" aria-hidden="true"><i></i><i></i><i></i><span>你的<br>理想城市</span></div>
+        <div class="intro-facts">
+          <div><b>46</b><span>道生活情境</span></div>
+          <div><b>12</b><span>项适配维度</span></div>
+          <div><b>5</b><span>个城市建议</span></div>
+        </div>
+      </aside>
+
+      <div class="intro-principles">
+        <article><span>01</span><h2>看见真实取舍</h2><p>城市选择没有标准答案。请选更接近日常的你，而不是理想中的你。</p></article>
+        <article><span>02</span><h2>不按等级论输赢</h2><p>城市能级只是候选范围，匹配看的是职业、成本、节奏与生活方式。</p></article>
+        <article><span>03</span><h2>保留选择余地</h2><p>除了首选城市，还会给出不同侧重点下的延伸选择与差异说明。</p></article>
+      </div>
+    </section>
+
+    <section class="screen quiz-screen" id="quizScreen" hidden aria-labelledby="questionText">
+      <div class="quiz-topline">
+        <div><span id="categoryLabel">个人性格</span><b id="questionCounter">01 / 46</b></div>
+        <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="46" aria-valuenow="1"><i id="progressBar"></i></div>
+      </div>
+      <div class="quiz-layout">
+        <aside class="question-index" aria-hidden="true"><span id="questionIndex">01</span><i></i><small>城市<br>选择档案</small></aside>
+        <article class="question-card">
+          <p class="question-context" id="questionContext">想象你正在安排一种长期生活</p>
+          <h1 id="questionText"></h1>
+          <div class="options" id="options" role="group" aria-label="本题选项"></div>
+          <footer class="question-footer">
+            <button class="previous-button" id="previousButton" type="button">← 上一题</button>
+            <span>答案只保存在你的浏览器中</span>
+          </footer>
+        </article>
+      </div>
+    </section>
+
+    <section class="screen result-screen" id="resultScreen" hidden aria-labelledby="resultCity">
+      <div class="result-heading">
+        <div><p class="eyebrow">你的城市适配报告</p><h1>更适合你的城市是</h1></div>
+        <button class="text-button" id="restartTopButton" type="button">重新测试 ↗</button>
+      </div>
+
+      <section class="result-hero">
+        <div class="result-city-copy">
+          <div class="city-tier-row"><span id="resultTier">新一线城市</span><i id="resultRegion">华东</i></div>
+          <h2 id="resultCity">城市</h2>
+          <p class="result-tagline" id="resultTagline"></p>
+          <div class="match-number"><b id="matchScore">88</b><span>%<small>综合适配度</small></span></div>
+        </div>
+        <div class="result-map" aria-hidden="true"><span id="resultCityMark">城</span><i></i><i></i><i></i></div>
+      </section>
+
+      <section class="profile-section" aria-labelledby="profileTitle">
+        <div class="section-title"><span>01</span><div><p>你的偏好坐标</p><h2 id="profileTitle">你在寻找怎样的城市生活</h2></div></div>
+        <div class="profile-grid" id="profileGrid"></div>
+        <p class="profile-summary" id="profileSummary"></p>
+      </section>
+
+      <section class="analysis-section" aria-labelledby="analysisTitle">
+        <div class="section-title"><span>02</span><div><p>主匹配分析</p><h2 id="analysisTitle">为什么是 <em id="analysisCity">这座城市</em></h2></div></div>
+        <div class="analysis-lede" id="analysisLede"></div>
+        <div class="analysis-grid" id="analysisGrid"></div>
+        <div class="attention-panel"><span>需要提前想清楚</span><p id="attentionText"></p></div>
+      </section>
+
+      <section class="alternatives-section" aria-labelledby="alternativesTitle">
+        <div class="section-title"><span>03</span><div><p>延伸城市建议</p><h2 id="alternativesTitle">如果你想换一种侧重点</h2></div></div>
+        <div class="alternative-grid" id="alternativeGrid"></div>
+      </section>
+
+      <section class="method-section">
+        <div><h2>如何理解这份结果</h2><p>本测试综合 12 项偏好维度，与候选城市画像进行相似度计算。结果更适合用来整理需求、缩小选择范围，不等同于定居或求职决策。</p></div>
+        <p>城市分级范围采用最后一版完整公开分级，即第一财经·新一线城市研究所《2025 新一线城市魅力排行榜》的一线、新一线、二线与三线城市。2026 年报告已不再发布完整城市分级。</p>
+      </section>
+
+      <div class="result-actions"><button class="primary-button" id="restartButton" type="button">重新测试 <span>↺</span></button></div>
+    </section>
+  </main>
+
+  <footer class="site-footer"><span>城市适配测试 · 2026</span><span>结果仅作为生活选择的启发</span></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <noscript><p class="noscript">请启用浏览器 JavaScript 后继续测试。</p></noscript>
+  <script src="/shared/license-gate.js"></script>
+  <script>TestPlatformLicense.start({ testSlug: "city-match", testName: "你适合的城市" });</script>
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
